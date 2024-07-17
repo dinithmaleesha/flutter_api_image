@@ -1,36 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:api_request/bloc/dog_bloc.dart';
 import 'package:api_request/bloc/dog_event.dart';
 import 'package:api_request/bloc/dog_state.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:api_request/model/dog.dart';
 
-class DogScreen extends StatelessWidget {
-  const DogScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => DogBloc(),
-      child: DogScreenBody(),
-    );
-  }
-}
-
-class DogScreenBody extends StatefulWidget {
-  @override
-  _DogScreenBodyState createState() => _DogScreenBodyState();
-}
-
-class _DogScreenBodyState extends State<DogScreenBody> {
-  late DogBloc _dogBloc;
-
-  @override
-  void initState() {
-    super.initState();
-    _dogBloc = BlocProvider.of<DogBloc>(context);
-    _dogBloc.add(FetchDogEvent());
-  }
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +19,11 @@ class _DogScreenBodyState extends State<DogScreenBody> {
           if (state is DogLoadingState) {
             return Center(child: CircularProgressIndicator());
           } else if (state is DogErrorState) {
-            return Center(child: Text('Error: ${state.error}'));
-          } else if (state is DogLoadedState) {
+            return Center(child: Text('Error'));
+          } else if (state is DogLoadedState) {;
+            if (state.dogs.isEmpty) {
+              return Center(child: Text('No dogs found!'));
+            }
             return ListView.builder(
               itemCount: state.dogs.length,
               itemBuilder: (context, index) {
@@ -55,14 +34,6 @@ class _DogScreenBodyState extends State<DogScreenBody> {
                     height: 250,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 7,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
@@ -76,23 +47,16 @@ class _DogScreenBodyState extends State<DogScreenBody> {
               },
             );
           } else {
-            return Center(child: Text('No data found'));
+            return Center(child: Text('No data found!'));
           }
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _dogBloc.add(FetchDogEvent());
+          BlocProvider.of<DogBloc>(context).add(FetchDogEvent());
         },
         child: Icon(Icons.refresh),
       ),
     );
   }
-
-  @override
-  void dispose() {
-    _dogBloc.close();
-    super.dispose();
-  }
 }
-
