@@ -1,18 +1,23 @@
+import 'package:api_request/bloc/dog_bloc.dart';
+import 'package:api_request/bloc/dog_event.dart';
 import 'package:api_request/screen/dog_screen.dart';
+import 'package:api_request/screen/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: DogScreen(),
+      title: 'Random Dogs App',
+      home: BlocProvider(
+        create: (context) => DogBloc()..add(FetchDogEvent()),
+        child: HomeScreen(),
+      ),
     );
   }
 }
